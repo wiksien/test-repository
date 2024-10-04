@@ -5,12 +5,17 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { useState, useEffect } from "react";
 import { executeFunction } from "@/utils/function.js";
 import { motion, AnimatePresence } from "framer-motion";
+import dynamic from 'next/dynamic';
+
+const ReactConfetti = dynamic(() => import('react-confetti'), { ssr: false });
 
 export default function Home() {
   const [message, setMessage] = useState("");
   const [showResult, setShowResult] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [confettiButtonVisible, setConfettiButtonVisible] = useState(true);
 
   useEffect(() => {
     document.body.style.background = "linear-gradient(45deg, #000000, #1a1a1a)";
@@ -33,8 +38,15 @@ export default function Home() {
     }
   }
 
+  const handleConfettiClick = () => {
+    setShowConfetti(true);
+    setConfettiButtonVisible(false);
+    setTimeout(() => setShowConfetti(false), 5000); // Stop confetti after 5 seconds
+  }
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-24 text-white relative overflow-hidden">
+      {showConfetti && <ReactConfetti />}
       <AnimatePresence>
         {isVisible && (
           <motion.div
@@ -72,7 +84,7 @@ export default function Home() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -50 }}
             transition={{ duration: 0.5, delay: 0.5 }}
-            className="z-10"
+            className="z-10 flex flex-col items-center"
           >
             <Card className="w-[600px] mb-8 bg-gradient-to-r from-indigo-900 via-purple-900 to-pink-900 text-white shadow-lg hover:shadow-xl transition-all duration-300">
               <CardHeader>
@@ -124,6 +136,24 @@ export default function Home() {
                 Empowering visionaries to shape the future, one quantum computation at a time.
               </CardFooter>
             </Card>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {confettiButtonVisible && (
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 50 }}
+            transition={{ duration: 0.5, delay: 1 }}
+            className="z-10 mt-8"
+          >
+            <Button 
+              onClick={handleConfettiClick}
+              className="bg-gradient-to-r from-yellow-400 via-red-500 to-pink-500 hover:from-yellow-500 hover:via-red-600 hover:to-pink-600 text-white font-bold py-2 px-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300"
+            >
+              Confetti Button
+            </Button>
           </motion.div>
         )}
       </AnimatePresence>
